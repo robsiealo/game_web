@@ -1,3 +1,4 @@
+# ...existing code...
 name: Zip Language Files
 
 on:
@@ -10,14 +11,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.x'
+        uses: actions/checkout@v3
 
       - name: Run zip script
         run: |
           chmod +x scripts/zip-lang.sh
           ./scripts/zip-lang.sh
+
+      - name: Prepare Pages content
+        run: |
+          mkdir -p public
+          if compgen -G "lang/*.zip" > /dev/null; then
+            mv lang/*.zip public/
+          else
+            echo "No zip files found"
+          fi
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: public
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v1
+# ...existing code...
