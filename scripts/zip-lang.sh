@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Navigate to the lang directory
-cd ../lang
+# Navigate to the lang directory from repository root
+cd lang
 
 # Loop through each .txt file in the directory
 for file in *.txt; do
