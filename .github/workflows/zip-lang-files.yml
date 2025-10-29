@@ -33,6 +33,7 @@ jobs:
         run: |
           mkdir -p public
           cp -r lang/*.zip public/ || echo "No zip files found"
+          touch public/.nojekyll
           ls -la public/  # Debug: list files in public directory
 
       - name: Upload Pages artifact
