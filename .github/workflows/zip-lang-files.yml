@@ -10,12 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pages: write # Permite la escritura en Pages
-      id-token: write # Necesario para el despliegue con OIDC
-
+      pages: write
+      id-token: write
+    environment: # ¡CORRECCIÓN! Esto soluciona el error "Missing environment"
+      name: github-pages # Especifica el entorno de Pages
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4 # Actualizado a v4 (mejor seguridad/rendimiento)
+        uses: actions/checkout@v4
 
       - name: Run zip script
         run: |
@@ -24,11 +25,7 @@ jobs:
 
       - name: Prepare Pages content
         run: |
-          # Crea la carpeta de destino 'public'
-          mkdir -p public 
-          
-          # Mueve los archivos .zip si existen. 
-          # El 'shopt -s nullglob' evita que el patrón 'lang/*.zip' se expanda si no hay archivos.
+          mkdir -p public
           shopt -s nullglob 
           zip_files=(lang/*.zip)
           
@@ -40,13 +37,13 @@ jobs:
           fi
 
       - name: Setup Pages
-        uses: actions/configure-pages@v5 # Nuevo paso necesario para configurar el ambiente de Pages
+        uses: actions/configure-pages@v5
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3 # Acción optimizada para Pages
+        uses: actions/upload-pages-artifact@v3
         with:
           path: public
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4 # Actualizado a v4 (última versión estable)
+        uses: actions/deploy-pages@v4
