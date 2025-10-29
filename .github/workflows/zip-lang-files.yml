@@ -12,9 +12,6 @@ jobs:
       contents: write
       pages: write
       id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Checkout repository
@@ -24,7 +21,7 @@ jobs:
         run: |
           chmod +x scripts/zip-lang.sh
           ./scripts/zip-lang.sh
-          ls -la lang/  # Debug: list files in lang directory
+          ls -la lang/
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -35,7 +32,8 @@ jobs:
           cp -r lang/*.zip public/ || echo "No zip files found"
           touch public/.nojekyll
           echo "this is a custom domain" > public/auto.txt
-          ls -la public/  # Debug: list files in public directory
+          echo "=== Public directory structure ==="
+          find public
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
@@ -45,3 +43,8 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Get Pages deployment URL
+        id: pages-deployment
+        run: |
+          echo "Pages deployment URL: ${{ steps.deployment.outputs.page_url }}"
