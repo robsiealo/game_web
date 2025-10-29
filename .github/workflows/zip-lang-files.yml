@@ -12,8 +12,10 @@ jobs:
       contents: read
       pages: write
       id-token: write
-    environment: # ¡CORRECCIÓN! Esto soluciona el error "Missing environment"
-      name: github-pages # Especifica el entorno de Pages
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -22,22 +24,16 @@ jobs:
         run: |
           chmod +x scripts/zip-lang.sh
           ./scripts/zip-lang.sh
+          ls -la lang/  # Debug: list files in lang directory
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
 
       - name: Prepare Pages content
         run: |
           mkdir -p public
-          shopt -s nullglob 
-          zip_files=(lang/*.zip)
-          
-          if [ ${#zip_files[@]} -gt 0 ]; then
-            echo "Archivos zip encontrados: ${zip_files[@]}"
-            mv "${zip_files[@]}" public/
-          else
-            echo "No se encontraron archivos zip en lang/."
-          fi
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
+          cp -r lang/*.zip public/ || echo "No zip files found"
+          ls -la public/  # Debug: list files in public directory
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
