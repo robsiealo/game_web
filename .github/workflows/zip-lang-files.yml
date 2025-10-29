@@ -8,9 +8,14 @@ on:
 jobs:
   zip-files:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write # Permite la escritura en Pages
+      id-token: write # Necesario para el despliegue con OIDC
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4 # Actualizado a v4 (mejor seguridad/rendimiento)
 
       - name: Run zip script
         run: |
@@ -19,19 +24,29 @@ jobs:
 
       - name: Prepare Pages content
         run: |
-          mkdir -p public
-          if compgen -G "lang/*.zip" > /dev/null; then
-            mv lang/*.zip public/
+          # Crea la carpeta de destino 'public'
+          mkdir -p public 
+          
+          # Mueve los archivos .zip si existen. 
+          # El 'shopt -s nullglob' evita que el patrón 'lang/*.zip' se expanda si no hay archivos.
+          shopt -s nullglob 
+          zip_files=(lang/*.zip)
+          
+          if [ ${#zip_files[@]} -gt 0 ]; then
+            echo "Archivos zip encontrados: ${zip_files[@]}"
+            mv "${zip_files[@]}" public/
           else
-            echo "No zip files found"
+            echo "No se encontraron archivos zip en lang/."
           fi
 
+      - name: Setup Pages
+        uses: actions/configure-pages@v5 # Nuevo paso necesario para configurar el ambiente de Pages
+
       - name: Upload Pages artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-pages-artifact@v3 # Acción optimizada para Pages
         with:
-          name: lang-zips
           path: public
 
       - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v1
-# ...existing code...
+        id: deployment
+        uses: actions/deploy-pages@v4 # Actualizado a v4 (última versión estable)
