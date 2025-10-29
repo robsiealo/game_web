@@ -1,0 +1,23 @@
+name: Zip Language Files
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  zip-files:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Run zip script
+        run: |
+          chmod +x scripts/zip-lang.sh
+          ./scripts/zip-lang.sh
