@@ -34,10 +34,7 @@ jobs:
         run: |
           mkdir -p public
           cp -r lang/*.zip public/ || echo "No zip files found"
-          touch public/.nojekyll
-          echo "this is a custom domain" > public/auto.txt
-          echo "=== Public directory structure ==="
-          find public
+          touch public/.nojekyll 
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
